@@ -27,33 +27,45 @@ const bookData: BookListData = mockData;
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [temp, setTemp] = useState<string>('');
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  // const router = useRouter();
+  // const searchParams = useSearchParams();
+  const [currentContents, setCurrentContents] = useState<BookItem[]>([...bookData.items].reverse());
 
   const contentsPerPage = 10;
-  const indexOfLastContent = currentPage * contentsPerPage;
-  const indexOfFirstContent = indexOfLastContent - contentsPerPage;
-  const currentContents = [...bookData.items]
-    .reverse()
-    .slice(indexOfFirstContent, indexOfLastContent);
+  // 페이지 수 계산
+  const totalContents = currentContents.length;
   const pageNumbers: number[] = [];
-
-  const totalContents = bookData.items.length;
   for (let i = 1; i <= Math.ceil(totalContents / contentsPerPage); i++) {
     pageNumbers.push(i);
   }
+  
+  // 10개 씩 자르기
+  const indexOfLastContent = currentPage * contentsPerPage;
+  const indexOfFirstContent = indexOfLastContent - contentsPerPage;
+  const paginatedContents = currentContents.slice(indexOfFirstContent, indexOfLastContent);
 
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTemp(e.target.value)
   };
-  const handleSearch = () => {
+
+  const handleSearch = async () => {
     if (temp.trim()) {
-      router.push(`/?search=${encodeURIComponent(temp.trim())}`);
+      try {
+        const response = await fetch(`/api/search?search=${encodeURIComponent(temp.trim())}`);
+        if (response.ok) {
+          const results = await response.json();
+          setCurrentPage(1);
+          setCurrentContents(results.items);
+        } else {
+          console.error("데이터를 받지 못함");
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -73,7 +85,7 @@ export default function Home() {
       </div>
 
       <div className='grid grid-cols-5 gap-x-5 gap-y-10 min-w-[1100px]'>
-        {currentContents.map((item, index) => {
+        {paginatedContents.map((item, index) => {
           return (
             <BookDetail book={item} key={index} />
           )
