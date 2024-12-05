@@ -9,7 +9,6 @@ export async function GET(req: Request) {
   }
 
   try {
-    // 외부 API 호출
     const apiUrl = `https://openapi.naver.com/v1/search/book.json?query=${encodeURIComponent(search)}&display=20`;
     const response = await fetch(apiUrl, {
       headers: {
