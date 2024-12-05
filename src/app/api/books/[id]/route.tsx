@@ -23,9 +23,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
     const xmlText = await response.text();
     const data = await parseStringPromise(xmlText, { explicitArray: false });
-    console.log(data);
-    
-    
+
     return NextResponse.json(data);
 
   } catch (error) {
