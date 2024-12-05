@@ -26,8 +26,9 @@ const bookData: BookListData = mockData;
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [store, setStore] = useState<string>('');
   const [temp, setTemp] = useState<string>('');
-  // const router = useRouter();
+  const router = useRouter();
   // const searchParams = useSearchParams();
   const [currentContents, setCurrentContents] = useState<BookItem[]>([...bookData.items].reverse());
 
@@ -52,6 +53,15 @@ export default function Home() {
     setTemp(e.target.value)
   };
 
+  const handleStoreSearch = async () => {
+    if (store.trim()) {
+      const filteredBooks = bookData.items.filter((book: BookItem) =>
+          book.title.includes(store) || book.author.includes(store)
+      );
+      setCurrentContents(filteredBooks);
+    }
+  };
+
   const handleSearch = async () => {
     if (temp.trim()) {
       try {
@@ -72,16 +82,39 @@ export default function Home() {
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <h2 className='text-3xl font-bold'>책 목록</h2>
+      <div className='flex items-center justify-items-center'>
+        <Link href="/" className='text-lg h-12 pt-2 px-3 border rounded-lg' onClick={() => {
+          setStore('');
+          setTemp('');
+          setCurrentPage(1);
+          setCurrentContents([...bookData.items].reverse());
+          router.push('/');
+        }}>🏠</Link>
+        {/* <h2 className='text-3xl font-bold ml-6'>책 목록</h2> */}
+      </div>
 
-      <div>
-        <input
-          value={temp}
-          onChange={handleInputChange}
-          className={'h-12 pl-12 text-base border rounded-lg'}
-          placeholder={'제목 또는 저자 검색'}
-        />
-        <button className='text-lg h-12 p-4' onClick={handleSearch}>🔍</button>
+      <div className='flex justify-around'>
+        <div className='' style={{borderRight:'1px solid #000'}} >
+          <div className='font-bold text-left'>현재 책에서 검색</div>
+          <input
+            value={store}
+            onChange={(e) => {setStore(e.target.value)}}
+            className={'h-12 pl-12 text-base border rounded-lg'}
+            placeholder={'제목 또는 저자 검색'}
+          />
+          <button className='text-lg h-12 p-4' onClick={handleStoreSearch}>🔍</button>
+        </div>
+
+        <div className='pl-5'>
+          <div className='font-bold text-left'>새로 추가할 책 검색</div>
+          <input
+            value={temp}
+            onChange={handleInputChange}
+            className={'h-12 pl-12 text-base border rounded-lg'}
+            placeholder={'책 검색'}
+          />
+          <button className='text-lg h-12 p-4' onClick={handleSearch}>🔍</button>
+        </div>
       </div>
 
       <div className='grid grid-cols-5 gap-x-5 gap-y-10 min-w-[1100px]'>
