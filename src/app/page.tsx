@@ -4,7 +4,7 @@ import mockData from '@/mockData.json';
 import { BookDetail } from './list/BookDetail';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export interface BookItem {
   title: string;
@@ -29,7 +29,6 @@ export default function Home() {
   const [store, setStore] = useState<string>('');
   const [temp, setTemp] = useState<string>('');
   const router = useRouter();
-  // const searchParams = useSearchParams();
   const [currentContents, setCurrentContents] = useState<BookItem[]>([...bookData.items].reverse());
 
   const contentsPerPage = 10;
@@ -54,6 +53,7 @@ export default function Home() {
   };
 
   const handleStoreSearch = async () => {
+    setTemp('');
     if (store.trim()) {
       const filteredBooks = bookData.items.filter((book: BookItem) =>
           book.title.includes(store) || book.author.includes(store)
@@ -63,9 +63,10 @@ export default function Home() {
   };
 
   const handleSearch = async () => {
+    setStore('');
     if (temp.trim()) {
       try {
-        const response = await fetch(`/api/search?search=${encodeURIComponent(temp.trim())}`);
+        const response = await fetch(`/api/books?search=${encodeURIComponent(temp.trim())}`);
         if (response.ok) {
           const results = await response.json();
           setCurrentPage(1);
@@ -79,19 +80,16 @@ export default function Home() {
     }
   };
 
-
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <div className='flex items-center justify-items-center'>
-        <Link href="/" className='text-lg h-12 pt-2 px-3 border rounded-lg' onClick={() => {
-          setStore('');
-          setTemp('');
-          setCurrentPage(1);
-          setCurrentContents([...bookData.items].reverse());
-          router.push('/');
-        }}>🏠</Link>
-        {/* <h2 className='text-3xl font-bold ml-6'>책 목록</h2> */}
-      </div>
+      <Link href="/" className='flex text-lg h-12 pt-2 px-3 border rounded-lg' onClick={() => {
+        setStore('');
+        setTemp('');
+        setCurrentPage(1);
+        setCurrentContents([...bookData.items].reverse());
+        router.push('/');
+      }}>🏠</Link>
+      
 
       <div className='flex justify-around'>
         <div className='' style={{borderRight:'1px solid #000'}} >
