@@ -69,6 +69,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   // const { id } = await params;
   const resolvedParams = await params;
   const id = resolvedParams.id;
+  console.log(id);
+  
 
   if (!id) {
     return NextResponse.json({ message: "No ISBN" }, { status: 400 });
@@ -76,8 +78,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   
   try {
     const filePath = path.join(process.cwd(), "src", "mockData.json");
+    console.log('filePath', filePath);
+    
     const fileData = await fs.readFile(filePath, "utf-8");
+    console.log('fileData', fileData);
     const books = JSON.parse(fileData);
+    console.log('books', books);
     
     const body = await req.json(); 
     const bookIndex = books.items.findIndex((book: any) => book.isbn === id);

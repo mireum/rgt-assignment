@@ -1,9 +1,9 @@
 [build]
-command = "next build"
-publish = ".next"
+  command = "next build"
+  publish = ".next"
 
 [functions]
-included_files = ["src/mockData.json"]
+  included_files = ["src/mockData.json"]
 
 [[plugins]]
-package = "@netlify/plugin-nextjs"
+  package = "@netlify/plugin-nextjs"
