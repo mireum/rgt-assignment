@@ -19,7 +19,7 @@ export default function BookInfoPage({ params }: { params: Promise<{ id: string 
           throw new Error("Failed to fetch data from external API");
         }
         const bookData = await response.json();
-        console.log(bookData);
+        // console.log(bookData);
         if (bookData.start) {
           // 네이버 검색을 한 경우
           setBook(bookData.item);
