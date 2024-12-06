@@ -42,7 +42,6 @@ export async function POST(req: Request) {
     
     const body = await req.json(); 
     books.items.push(body);
-    console.log(books);
     
     await fs.writeFile(filePath, JSON.stringify(books, null, 2), "utf-8");
   

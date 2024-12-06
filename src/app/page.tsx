@@ -81,20 +81,6 @@ export default function Home() {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchMockData = async () => {
-  //     try {
-  //       const response = await fetch('/api/list');
-  //       const data = await response.json();
-        
-  //       setCurrentContents(data.reverse());
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   }
-  //   fetchMockData();
-  // }, []);
-
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Link href="/" className='flex text-lg h-12 pt-2 px-3 border rounded-lg' onClick={() => {
