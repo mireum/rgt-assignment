@@ -77,13 +77,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   }
   
   try {
-    const filePath = path.join(process.cwd(), "src", "mockData.json");
-    console.log('filePath', filePath);
-    
+    const filePath = path.join(__dirname, "..", "..", "mockData.json");
     const fileData = await fs.readFile(filePath, "utf-8");
-    console.log('fileData', fileData);
     const books = JSON.parse(fileData);
-    console.log('books', books);
     
     const body = await req.json(); 
     const bookIndex = books.items.findIndex((book: any) => book.isbn === id);
