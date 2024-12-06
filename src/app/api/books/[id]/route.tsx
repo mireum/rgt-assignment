@@ -3,7 +3,7 @@ import { parseStringPromise } from "xml2js";
 import fs from "fs/promises";
 import path from "path";
 
-export async function GET(req: NextResponse, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
   const { id } = await params;
   console.log(`Received ID: ${id}`);
   
