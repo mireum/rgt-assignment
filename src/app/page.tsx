@@ -1,8 +1,7 @@
 "use client";
 
-import mockData from '@/mockData.json';
 import { BookDetail } from './list/BookDetail';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -23,14 +22,14 @@ export interface BookListData {
   items: BookItem[];
 }
 
-const bookData: BookListData = mockData;
+// const bookData: BookListData = mockData;
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [store, setStore] = useState<string>('');
   const [temp, setTemp] = useState<string>('');
   const router = useRouter();
-  const [currentContents, setCurrentContents] = useState<BookItem[]>([...bookData.items].reverse());
+  const [currentContents, setCurrentContents] = useState<BookItem[]>([]);
 
   const contentsPerPage = 10;
   // 페이지 수 계산
@@ -81,13 +80,27 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const fetchMockData = async () => {
+      try {
+        const response = await fetch('/api/list');
+        const data = await response.json();
+        
+        setCurrentContents(data.reverse());
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchMockData();
+  }, []);
+
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <Link href="/" className='flex text-lg h-12 pt-2 px-3 border rounded-lg' onClick={() => {
         setStore('');
         setTemp('');
         setCurrentPage(1);
-        setCurrentContents([...bookData.items].reverse());
+        // setCurrentContents([...bookData.items].reverse());
         router.push('/');
       }}>🏠</Link>
       

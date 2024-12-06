@@ -19,7 +19,7 @@ export async function GET(req: Request,
   }
 
   try {
-    const filePath = path.join(process.cwd(), "src", "mockData.json");
+    const filePath = path.join(process.cwd(), "public", "mockData.json");
     const fileData = await fs.readFile(filePath, "utf-8");
     const books = JSON.parse(fileData);
     
@@ -75,7 +75,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   }
   
   try {
-    const filePath = path.join(process.cwd(), "src", "mockData.json");
+    const filePath = path.join(process.cwd(), "public", "mockData.json");
     const fileData = await fs.readFile(filePath, "utf-8");
     const books = JSON.parse(fileData);
     
@@ -109,7 +109,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   }
 
   try {
-    const filePath = path.join(process.cwd(), "src", "mockData.json");
+    const filePath = path.join(process.cwd(), "public", "mockData.json");
     const fileData = await fs.readFile(filePath, "utf-8");
     const books = JSON.parse(fileData);
     

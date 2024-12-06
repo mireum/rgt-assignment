@@ -36,7 +36,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const filePath = path.join(process.cwd(), "src", "mockData.json");
+    const filePath = path.join(process.cwd(), "public", "mockData.json");
     const fileData = await fs.readFile(filePath, "utf-8");
     const books = JSON.parse(fileData);
     
