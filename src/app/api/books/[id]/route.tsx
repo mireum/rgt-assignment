@@ -4,12 +4,14 @@ import fs from "fs/promises";
 import path from "path";
 
 export async function GET(req: Request, 
-  // { params }: { params: Promise<{ id: string }> }
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
+  // { params }: { params: { id: string } }
 ) {
   // const id = await params;
-  const id = params.id;
-  console.log(`Received params: ${params}`);
+  // const id = params.id;
+  // console.log(`Received params: ${params}`);
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
   console.log(`Received ID: ${id}`);
   
   if (!id) {
@@ -64,7 +66,9 @@ export async function GET(req: Request,
 }
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  // const { id } = await params;
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
 
   if (!id) {
     return NextResponse.json({ message: "No ISBN" }, { status: 400 });
@@ -95,8 +99,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  console.log(id);
+  // const { id } = await params;
+  // console.log(id);
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
   
   if (!id) {
     return NextResponse.json({ message: "No ISBN provided" }, { status: 400 });
