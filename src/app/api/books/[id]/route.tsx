@@ -3,8 +3,12 @@ import { parseStringPromise } from "xml2js";
 import fs from "fs/promises";
 import path from "path";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(req: Request, 
+  // { params }: { params: { id: string } }
+  context: { params: { id: string } }
+) {
+  // const { id } = params;
+  const { id } = context.params;
   console.log(`Received ID: ${id}`);
   
   if (!id) {
