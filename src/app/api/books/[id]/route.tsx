@@ -8,7 +8,9 @@ export async function GET(req: Request,
   context: { params: { id: string } }
 ) {
   // const { id } = params;
-  const { id } = context.params;
+  // const { id } = context.params;
+  const params = context.params;
+  const id = params.id;
   console.log(`Received ID: ${id}`);
   
   if (!id) {
