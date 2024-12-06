@@ -16,6 +16,7 @@ export interface BookItem {
   pubdate: string;
   isbn: string;
   description: string;
+  count?: number;
 }
 
 export interface BookListData {
