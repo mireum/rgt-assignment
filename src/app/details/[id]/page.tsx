@@ -1,13 +1,15 @@
 "use client"
 
 import { BookItem } from "@/app/page";
-import { useEffect, useState, use, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, use } from "react";
 
 export default function BookInfoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [ book, setBook ] = useState<BookItem | null>();
   const [ count, setCount ] = useState<number>(1);
-  const isInitialRender = useRef(true);
+  const router = useRouter();
+
   useEffect(() => {
     const getBookDetail = async () => {
       try {
@@ -16,8 +18,11 @@ export default function BookInfoPage({ params }: { params: Promise<{ id: string 
           throw new Error("Failed to fetch data from external API");
         }
         const bookData = await response.json();
-        // console.log(bookData);
-        setBook(bookData.rss.channel.item);
+        setBook(bookData);
+
+        if (bookData.count) {
+          setCount(bookData.count);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -25,47 +30,57 @@ export default function BookInfoPage({ params }: { params: Promise<{ id: string 
     getBookDetail();  
   }, []);
 
-  const handlePlusCount = () => {
+  const handlePlusCount = async () => {
     setCount((prev => prev+1));
-
+    await handleCount(count+1);
   }
-  const handleMinusCount = () => {
-    if (count > 0) {
+  const handleMinusCount = async () => {
+    if (count > 1) {
       setCount((prev => prev-1));
+      await handleCount(count-1);
     }
     else {
-      alert('책이 한 권도 없습니다');
+      alert('책이 한 권 입니다');
     }
   }
 
-  useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return; // 초기 렌더링에서 실행되지 않도록 종료
+  const handleCount = async (c:number) => {
+    try {
+      const response = await fetch(`/api/books/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(c),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to update book: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      setBook(data.book);
+    } catch (err) {
+      console.error(err);
     }
-    const plusCount = async () => {
+  }
+
+  const handleDelete = async () => {
+    const q = confirm('이 책을 삭제하시겠습니까?');
+    if (q) {
       try {
         const response = await fetch(`/api/books/${id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(count),
+          method: "DELETE",
         });
-    
-        if (!response.ok) {
-          throw new Error(`Failed to update book: ${response.statusText}`);
-        }
-    
         const data = await response.json();
-        console.log("Book updated successfully:", data);
-        setBook(data.book);
+        console.log(data);
+        alert('책이 삭제되었습니다!');
+        router.push('/');
       } catch (err) {
         console.error(err);
       }
     }
-    plusCount();    
-  }, [count])
+  };
 
   if (!book) {
     return (
@@ -89,12 +104,14 @@ export default function BookInfoPage({ params }: { params: Promise<{ id: string 
           <div>출판일: {book.pubdate}</div>
           <div>출판사: {book.publisher}</div>
           <div>수량</div>
-          <div className="flex  py-1">
-            <button className="border border-1 border-slate-400 py-1 px-2" onClick={handleMinusCount}>-</button>
-            <div className="border border-1 py-1 px-2">{book.count ? book.count : 1}</div>
-            <button className="border border-1 border-slate-400 py-1 px-2" onClick={handlePlusCount}>+</button>
-            <div>
-              <button>이 책 제거</button>
+          <div className="flex justify-between py-1">
+            <div className="flex">
+              <button className="border border-1 border-slate-400 py-1 px-2" onClick={handleMinusCount}>-</button>
+              <div className="border border-1 py-1 px-2">{count}</div>
+              <button className="border border-1 border-slate-400 py-1 px-2" onClick={handlePlusCount}>+</button>
+            </div>
+            <div className="bg-red-700 rounded">
+              <button className="text-white p-2" onClick={handleDelete}>책 제거</button>
             </div>
           </div>
         </div>
