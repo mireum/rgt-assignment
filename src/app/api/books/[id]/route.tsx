@@ -35,7 +35,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         const xmlText = await response.text();
         const data = await parseStringPromise(xmlText, { explicitArray: false });
         
-        return NextResponse.json(data.rss.channel.item);
+        return NextResponse.json(data.rss.channel);
       } catch (error) {
         console.error("API Error:", error);
         return NextResponse.json(
@@ -85,8 +85,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     return NextResponse.json({ message: "Book updated successfully", book: books.items[bookIndex] });
 
   } catch (error) {
-    console.error(error);
-    
+    console.error(error);  
   }
 }
 

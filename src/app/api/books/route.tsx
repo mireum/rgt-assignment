@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import fs from "fs/promises";
+import path from "path";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -29,5 +31,23 @@ export async function GET(req: Request) {
         { message: "Internal Server Error" },
         { status: 500 }
     );
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const filePath = path.join(process.cwd(), "src", "mockData.json");
+    const fileData = await fs.readFile(filePath, "utf-8");
+    const books = JSON.parse(fileData);
+    
+    const body = await req.json(); 
+    books.items.push(body);
+    console.log(books);
+    
+    await fs.writeFile(filePath, JSON.stringify(books, null, 2), "utf-8");
+  
+    return NextResponse.json({ message: "Books added successfully"});
+  } catch (err) {
+    console.error(err);
   }
 }

@@ -8,6 +8,7 @@ export default function BookInfoPage({ params }: { params: Promise<{ id: string 
   const { id } = use(params);
   const [ book, setBook ] = useState<BookItem | null>();
   const [ count, setCount ] = useState<number>(1);
+  const [ isSearching, setIsSearching ] = useState<Boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -18,7 +19,16 @@ export default function BookInfoPage({ params }: { params: Promise<{ id: string 
           throw new Error("Failed to fetch data from external API");
         }
         const bookData = await response.json();
-        setBook(bookData);
+        console.log(bookData);
+        if (bookData.start) {
+          // 네이버 검색을 한 경우
+          setBook(bookData.item);
+          setIsSearching(true);
+        }
+        else {
+          // mockData에 추가한 책일 경우
+          setBook(bookData);
+        }
 
         if (bookData.count) {
           setCount(bookData.count);
@@ -82,6 +92,23 @@ export default function BookInfoPage({ params }: { params: Promise<{ id: string 
     }
   };
 
+  const handleAddBook = async (book: BookItem) => {
+    try {
+      const response = await fetch(`/api/books`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(book),
+      });
+      const data = await response.json();
+      console.log(data);
+      alert('책이 추가되었습니다!');
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   if (!book) {
     return (
       <div className="items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
@@ -103,16 +130,24 @@ export default function BookInfoPage({ params }: { params: Promise<{ id: string 
           <div>ISBN: {book.isbn}</div>
           <div>출판일: {book.pubdate}</div>
           <div>출판사: {book.publisher}</div>
-          <div>수량</div>
           <div className="flex justify-between py-1">
-            <div className="flex">
-              <button className="border border-1 border-slate-400 py-1 px-2" onClick={handleMinusCount}>-</button>
-              <div className="border border-1 py-1 px-2">{count}</div>
-              <button className="border border-1 border-slate-400 py-1 px-2" onClick={handlePlusCount}>+</button>
+            {!isSearching ? (
+            <>
+              <div>수량</div>
+              <div className="flex">
+                <button className="border border-1 border-slate-400 py-1 px-2" onClick={handleMinusCount}>-</button>
+                <div className="border border-1 py-1 px-2">{count}</div>
+                <button className="border border-1 border-slate-400 py-1 px-2" onClick={handlePlusCount}>+</button>
+              </div>
+              <div className="bg-red-700 rounded">
+                <button className="text-white p-2" onClick={handleDelete}>책 제거</button>
+              </div>
+            </>
+            ) :
+            <div className="border rounded">
+              <button className="bg-sky-500 p-2" onClick={() => {handleAddBook(book)}}>서점에 추가하기</button>
             </div>
-            <div className="bg-red-700 rounded">
-              <button className="text-white p-2" onClick={handleDelete}>책 제거</button>
-            </div>
+          }
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import mockData from '@/mockData.json';
 import { BookDetail } from './list/BookDetail';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -112,6 +112,9 @@ export default function Home() {
           <input
             value={store}
             onChange={(e) => {setStore(e.target.value)}}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {handleStoreSearch();}
+            }}
             className={'h-12 pl-12 text-base border rounded-lg'}
             placeholder={'제목 또는 저자 검색'}
           />
@@ -123,6 +126,9 @@ export default function Home() {
           <input
             value={temp}
             onChange={handleInputChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {handleSearch();}
+            }}
             className={'h-12 pl-12 text-base border rounded-lg'}
             placeholder={'책 검색'}
           />
