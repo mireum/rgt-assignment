@@ -5,12 +5,12 @@ import path from "path";
 
 export async function GET(req: Request, 
   // { params }: { params: { id: string } }
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // const { id } = params;
   // const { id } = context.params;
-  const params = context.params;
-  const id = params.id;
+  // const params = context.params;
+  const id = params;
   console.log(`Received ID: ${id}`);
   
   if (!id) {
