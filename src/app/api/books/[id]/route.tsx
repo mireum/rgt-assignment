@@ -12,26 +12,42 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 
   try {
-    // const apiUrl = `https://openapi.naver.com/v1/search/book_adv.xml?d_isbn=${id}`;
-    // const response = await fetch(apiUrl, {
-    //   headers: {
-    //     "X-Naver-Client-Id": `${process.env.NAVER_ID}`,
-    //     "X-Naver-Client-Secret": `${process.env.NAVER_KEY}`,
-    //   },
-    // });
-
-    // if (!response.ok) {
-    //   throw new Error("Failed to fetch data from external API");
-    // }
-    // const xmlText = await response.text();
-    // const data = await parseStringPromise(xmlText, { explicitArray: false });
     const filePath = path.join(process.cwd(), "src", "mockData.json");
     const fileData = await fs.readFile(filePath, "utf-8");
     const books = JSON.parse(fileData);
     
     const bookIndex = books.items.findIndex((book: any) => book.isbn === id);
-    const book = books.items[bookIndex];
-    return NextResponse.json(book);
+    
+    // 없으면 네이버에서 검색api
+    if (bookIndex == -1) {
+      try {
+        const apiUrl = `https://openapi.naver.com/v1/search/book_adv.xml?d_isbn=${id}`;
+        const response = await fetch(apiUrl, {
+          headers: {
+            "X-Naver-Client-Id": `${process.env.NAVER_ID}`,
+            "X-Naver-Client-Secret": `${process.env.NAVER_KEY}`,
+          },
+        });
+    
+        if (!response.ok) {
+          throw new Error("Failed to fetch data from external API");
+        }
+        const xmlText = await response.text();
+        const data = await parseStringPromise(xmlText, { explicitArray: false });
+        
+        return NextResponse.json(data.rss.channel.item);
+      } catch (error) {
+        console.error("API Error:", error);
+        return NextResponse.json(
+          { message: "Internal Server Error" },
+          { status: 500 }
+        );
+      }
+    }
+    else {
+      const book = books.items[bookIndex];
+      return NextResponse.json(book);
+    }
 
   } catch (error) {
       console.error("API Error:", error);
