@@ -77,7 +77,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   }
   
   try {
-    const filePath = path.join(__dirname, "..", "..", "mockData.json");
+    const filePath = path.resolve("./src/mockData.json");
+    console.log(filePath);
+    
     const fileData = await fs.readFile(filePath, "utf-8");
     const books = JSON.parse(fileData);
     
